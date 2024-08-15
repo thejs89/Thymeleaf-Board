@@ -1,0 +1,9 @@
+CREATE TABLE board (
+	seq NUMBER NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	title VARCHAR(200) NOT NULL,
+	content VARCHAR(2000) NOT NULL,
+	group_id INT NOT NULL,
+	group_order INT NOT NULL,
+	depth INT NOT NULL
+);
+
