@@ -8,7 +8,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.board.thymeleaf.domain.Board;
+import com.board.thymeleaf.domain.PageBoard;
+import com.board.thymeleaf.domain.Pager;
 import com.board.thymeleaf.service.ifc.BoardService;
 import com.google.common.collect.ImmutableMap;
 
@@ -26,11 +27,11 @@ public class BoardContoller {
 
   @GetMapping("/list")
   public Map<?,?> getBoardList(@RequestParam(required = false) Map<String,Object> map) throws Exception {
+		List<PageBoard> list = boardService.getBoardList(map);
+    Pager<PageBoard> page =  Pager.formList(list);
 
-		List<Board> list = boardService.getBoardList();
-		
     return ImmutableMap.<String, Object>builder()
-    .put("list",list)
+    .put("page",page)
     .build();
 
   }

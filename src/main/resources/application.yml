@@ -20,4 +20,5 @@ mybatis:
   type-aliases-package:
     com.board.thymeleaf.domain
   mapper-locations:
-   - com/board/thymeleaf/mapper/board/**/*.xml  
+   - com/board/thymeleaf/mapper/board/**/*.xml
+   - com/board/thymeleaf/mapper/common/**/*.xml

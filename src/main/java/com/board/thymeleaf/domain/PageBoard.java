@@ -14,7 +14,7 @@ import lombok.ToString;
 @Setter
 @ToString
 @Alias("board")
-public class Board {
+public class PageBoard extends PageVO {
   private int seq;
   private String title;
   private String content;
