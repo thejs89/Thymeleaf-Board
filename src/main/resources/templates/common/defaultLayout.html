@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<!--라이브러리 참조 : Thymeleaf & Thymeleaf Layout -->
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+
+    <!-- CSS 영역을 관리하는 환경 영역-->
+    <th:block th:replace="/common/head :: headFragment"></th:block>
+    <body class="hold-transition sidebar-mini">
+      <div class="wrapper">
+        <!--Header 영역을 참조합니다.-->
+        <th:block th:replace="/common/header :: headerFragment"></th:block>
+        
+        <!-- side 영역을 참조합니다. -->
+        <th:block th:replace="/common/side :: sideFragment" />
+    
+        <!--Content 내용 영역을 참조합니다-->
+        <th:block layout:fragment="content"></th:block>
+    
+        <!--Footer 영역을 참조합니다.-->
+        <footer th:replace="/common/footer :: footerFragment"></footer>
+
+        <th:block th:replace="/common/config :: configFragment" />
+      </div>
+    </body>
+</html>

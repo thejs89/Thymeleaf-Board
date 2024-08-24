@@ -3,7 +3,7 @@
 <mapper namespace="com.board.thymeleaf.repository.BoardRepo">
 
   <select id="getBoardList" resultType="board">
-   <include refid="common.pagination.header"/>
+   <include refid="common.board.pagination.header"/>
     SELECT SEQ as seq
           ,TITLE
           ,CONTENT
@@ -12,7 +12,7 @@
           ,DEPTH
       FROM BOARD
      WHERE 1=1
-    <include refid="common.pagination.footer"/>
+    <include refid="common.board.pagination.footer"/>
   </select>
 
 </mapper>

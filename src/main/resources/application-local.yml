@@ -13,6 +13,11 @@ spring:
       schema-locations: classpath*:h2/schema.sql
       data-locations: classpath*:h2/data.sql
       encoding: utf-8
+  thymeleaf:
+    cache: false
+    enabled: true
+
+
 
 thymeleaf:
   datasource:
