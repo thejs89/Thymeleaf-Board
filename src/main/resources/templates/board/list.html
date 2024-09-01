@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="common/defaultLayout">
+  <body>
+    <th:block layout:fragment="content">
+      <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+          <div class="container-fluid">
+            <div class="row mb-2">
+              <div class="col-sm-6">
+                <h1>공지사항</h1>
+              </div>
+              <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                  <li class="breadcrumb-item"><a href="#">Home</a></li>
+                  <li class="breadcrumb-item active">공지사항</li>
+                </ol>
+              </div>
+            </div>
+          </div><!-- /.container-fluid -->
+        </section>
+        <div class="card-footer">
+          <button type="button" th:onclick="|location.href='@{/board/write}'|" class="btn btn-primary float-right">등록</button>
+        </div>
+        <!-- Main content -->
+        <section class="content">
+          <div class="container-fluid">
+            <div class="row">
+              <div class="col-12">
+                <div class="card">
+                  <!-- /.card-header -->
+                  <div class="card-body">
+                    <table class="table table-bordered">
+                      <thead>
+                        <tr>
+                          <th style="width: 80px">#</th>
+                          <th>제목</th>
+                          <th style="width: 100px">공개여부</th>
+                          <th style="width: 100px">작성자</th>
+                          <th style="width: 100px">작성일</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr th:each="item : ${page.contents}">
+                          <td th:text="${item.rnum}"></td>
+                          <td><a th:href="@{/board/view(seq=${item.seq})}" th:text="${item.title}"></a></td>
+                          <td th:if="${item.display}">공개</td>
+                          <td th:unless="${item.display}">비공개</td>
+                          <td th:text="${item.updId}"></td>
+                          <td th:text="${item.updDate}"></td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                  <!-- /.card-body -->
+                  <div class="card-footer clearfix">
+                    <ul class="pagination pagination-sm m-0 float-right"
+                        th:with="
+                          divs = ${(page.currentPage-1)/10},
+                          start = ${divs * 10 + 1},
+                          tempEndPage = ${(divs+1) * 10},
+                          end = ${T(java.lang.Math).min(tempEndPage,page.totalPage)},
+                          prev = ${T(java.lang.Math).max(1,divs*10)},
+                          next = ${T(java.lang.Math).min(page.totalPage,(divs+1)*10+1)} 
+                          ">
+                        <li class="page-item"><a class="page-link" th:href="@{/board/list(page=${prev})}">&laquo;</a></li>
+                        <li class="page-item" th:each="page: ${#numbers.sequence(start,end)}">
+                            <a class="page-link" th:text="${page}" th:href="@{/board/list(page=${page})}">1</a>
+                        </li>
+                        <li class="page-item"><a class="page-link" th:href="@{/board/list(page=${next})}">&raquo;</a></li>
+                    </ul>
+                  </div>
+                </div>
+                <!-- /.card -->
+              </div>
+              <!-- /.col -->
+            </div>
+            <!-- /.row -->
+          </div><!-- /.container-fluid -->
+        </section>
+        <!-- /.content -->
+      </div>
+    </th:block>
+  </body>
+  </html>
+  

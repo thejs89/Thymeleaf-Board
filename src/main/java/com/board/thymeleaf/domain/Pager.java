@@ -27,6 +27,8 @@ public class Pager<T extends PageVO> {
   @Builder.Default
   private Integer currentPage = 0;
   @Builder.Default
+  private Integer totalPage = 0;
+  @Builder.Default
   private List<T> contents = new ArrayList<>();
 
   public Pager(List<T> contents) {
@@ -34,10 +36,12 @@ public class Pager<T extends PageVO> {
     if (this.contents.size() == 0) {
       this.totalCount = 0;
       this.currentPage = 0;
+      this.totalPage = 1;
     } else {
       T item = contents.get(0);
       this.totalCount = item.getTotalCount();
       this.currentPage = item.getCurrentPage();
+      this.totalPage =  (int) Math.ceil(item.getTotalCount() * 1.0  / item.getSize());
     }
   }
   public static <P extends PageVO> Pager<P> formList(List<P> contents) {

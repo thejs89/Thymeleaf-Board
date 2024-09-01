@@ -2,17 +2,73 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.board.thymeleaf.repository.BoardRepo">
 
-  <select id="getBoardList" resultType="board">
+  <select id="getBoardList" resultType="pageboard">
    <include refid="common.board.pagination.header"/>
     SELECT SEQ as seq
           ,TITLE
           ,CONTENT
+          ,DISPLAY
           ,GROUP_ID
           ,GROUP_ORDER
           ,DEPTH
+          ,FORMATDATETIME(REG_DATE, 'yyyy-MM-dd') AS REG_DATE          
+          ,REG_ID
+          ,FORMATDATETIME(UPD_DATE, 'yyyy-MM-dd') AS UPD_DATE
+          ,UPD_ID
       FROM BOARD
      WHERE 1=1
+      AND DELETE_YN = false
     <include refid="common.board.pagination.footer"/>
+  </select>
+
+  <insert id="insertBoard" parameterType="board">
+    <selectKey resultType="Integer" keyProperty="seq" order="BEFORE">
+      SELECT NVL(MAX(seq) + 1, 1) AS seq
+        FROM BOARD
+    </selectKey>
+    INSERT INTO BOARD 
+                (seq
+                ,title
+                ,content
+                ,display
+                ,group_id
+                ,group_order
+                ,depth
+                ,delete_yn
+                ,reg_date
+                ,reg_id
+                ,upd_date
+                ,upd_id) 
+         VALUES (#{seq}
+                ,#{title}
+                ,#{content}
+                ,#{display}
+                ,#{seq}
+                ,#{groupOrder}
+                ,#{depth}
+                ,#{deleteYn}
+                ,#{regDate}
+                ,#{regId}
+                ,#{updDate}
+                ,#{updId})
+  </insert>
+
+  <select id="getBoardView" resultType="board">
+    SELECT SEQ as seq
+          ,TITLE
+          ,CONTENT
+          ,DISPLAY
+          ,GROUP_ID
+          ,GROUP_ORDER
+          ,DEPTH
+          ,REG_DATE          
+          ,REG_ID
+          ,UPD_DATE
+          ,UPD_ID
+      FROM BOARD
+     WHERE 1=1
+       AND DELETE_YN = false  
+       AND seq = #{seq}
   </select>
 
 </mapper>

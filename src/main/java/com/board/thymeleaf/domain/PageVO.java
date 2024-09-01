@@ -28,5 +28,10 @@ public class PageVO {
 	@Builder.Default
 	@JsonIgnore
 	private Integer currentPage = 0;
-
+	@Builder.Default
+	@JsonIgnore
+	private Integer totalPage = 0;
+	@Builder.Default
+	@JsonIgnore
+	private Integer size = 0;
 }

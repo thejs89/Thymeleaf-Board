@@ -12,9 +12,10 @@
   <sql id="footer">
       ), TOTAL_COUNT AS (SELECT COUNT(1) AS TOTAL_COUNT FROM SEARCH_ORG A1)
     SELECT ROW_NUMBER() OVER(ORDER BY A1.GROUP_ID ASC,A1.GROUP_ORDER DESC) AS RNUM
-    		 , A1.*
+    		  , A1.*
           , B1.TOTAL_COUNT
           , #{page} AS CURRENT_PAGE
+          , #{size} AS size
       FROM SEARCH_ORG A1 <!-- [조회원본] -->
      CROSS JOIN TOTAL_COUNT B1 <!-- [총페이지] -->
      ORDER BY RNUM DESC

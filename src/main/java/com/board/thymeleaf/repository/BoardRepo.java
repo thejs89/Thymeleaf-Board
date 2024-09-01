@@ -6,6 +6,7 @@ import java.util.Map;
 import org.springframework.stereotype.Repository;
 
 import com.board.thymeleaf.config.BoardMapper;
+import com.board.thymeleaf.domain.Board;
 import com.board.thymeleaf.domain.PageBoard;
 
 @BoardMapper
@@ -13,5 +14,7 @@ import com.board.thymeleaf.domain.PageBoard;
 public interface BoardRepo {
 
   List<PageBoard> getBoardList(Map<String,Object> map);
+  Integer insertBoard(Board board);
+  Board getBoardView(Integer seq);
   
 }

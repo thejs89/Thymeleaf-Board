@@ -1,5 +1,7 @@
 package com.board.thymeleaf.domain;
 
+import java.util.Date;
+
 import org.apache.ibatis.type.Alias;
 
 import lombok.AllArgsConstructor;
@@ -13,8 +15,8 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-@Alias("pageboard")
-public class PageBoard extends PageVO {
+@Alias("board")
+public class Board {
   private int seq;
   private String title;
   private String content;
@@ -22,8 +24,9 @@ public class PageBoard extends PageVO {
   private int groupId;
   private int groupOrder;
   private int depth;
-  private String regDate;
+  private boolean deleteYn;
+  private Date regDate;
   private String regId;
-  private String updDate;
+  private Date updDate;
   private String updId;
 }
