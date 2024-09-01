@@ -34,27 +34,25 @@
                   </div>
                   <!-- /.card-header -->
                   <!-- form start -->
-                  <form th:object="${board}">
-                    <div class="card-body">
-                      <div class="form-group">
-                        <label for="exampleInputEmail1">제목</label>
-                        <input type="hidden" class="form-control" placeholder="Enter title" th:field="*{seq}">
-                        <input type="text" class="form-control" placeholder="Enter title" th:field="*{title}" disabled>
-                      </div>    
-                      <div class="form-group">
-                        <label for="exampleInputPassword1">내용</label>
-                        <textarea class="form-control" rows="3" placeholder="Enter ..." th:field="*{content}" disabled></textarea>
-                      </div>
-                      <div class="form-check">
-                        <input type="checkbox" class="form-check-input" th:field="*{display}" disabled>
-                        <label class="form-check-label" for="display">공개</label>
-                      </div>
+                  <div class="card-body">
+                    <div class="form-group">
+                      <label for="exampleInputEmail1">제목</label>
+                      <input type="text" class="form-control" th:field="${board.title}" disabled>
+                    </div>    
+                    <div class="form-group">
+                      <label for="exampleInputPassword1">내용</label>
+                      <textarea class="form-control" rows="3" th:field="${board.content}" disabled></textarea>
                     </div>
-                  </form>
+                    <div class="form-check">
+                      <input type="checkbox" class="form-check-input" th:field="${board.display}" disabled>
+                      <label class="form-check-label" for="display">공개</label>
+                    </div>
+                  </div>
                   <form th:action="@{/board/reply/insert}" th:object="${replyboard}" method="post">
                     <div class="card-body">
                       <div class="form-group">
                         <label for="exampleInputEmail1">제목</label>
+                        <input type="hidden" class="form-control" placeholder="Enter title"  id="parentSeq" name="parentSeq"  th:value="${board.seq}">
                         <input type="text" class="form-control" placeholder="Enter title" th:field="*{title}">
                       </div>    
                       <div class="form-group">
@@ -68,7 +66,7 @@
                     </div>
                     <!-- /.card-body --> 
                     <div class="card-footer">
-                      <button type="button" class="btn btn-primary float-right">저장</button>
+                      <button type="submit" class="btn btn-primary float-right">저장</button>
                       <button type="button" class="btn btn-primary" th:onclick="|location.href='@{/board/list}'|">목록</button>
                     </div>
                   </form>

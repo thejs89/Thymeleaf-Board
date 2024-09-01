@@ -17,6 +17,7 @@ import com.board.thymeleaf.domain.PageBoard;
 import com.board.thymeleaf.domain.Pager;
 import com.board.thymeleaf.service.ifc.BoardService;
 
+import groovyjarjarantlr4.v4.parse.ANTLRParser.sync_return;
 import lombok.RequiredArgsConstructor;
 
 @Controller
@@ -62,6 +63,15 @@ public class BoardContoller {
     model.addAttribute("board", board);
     model.addAttribute("replyboard", new Board());
     return "board/reply";
+  }
+
+  @PostMapping("/reply/insert")
+  public String insertReplyBoard(@RequestParam("parentSeq") int parentSeq, @ModelAttribute Board board,Model model) throws Exception {
+    System.out.println("parentSeq============"+parentSeq);
+    System.out.println("board==========="+board);
+    
+    //boardService.insertBoard(board);
+    return "redirect:/board/list";
   }
 
 
