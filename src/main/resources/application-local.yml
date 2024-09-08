@@ -1,7 +1,6 @@
 logging:
   level: 
     com.board.thymeleaf: DEBUG
-    springframework.web: debug
     
 spring:
   h2:

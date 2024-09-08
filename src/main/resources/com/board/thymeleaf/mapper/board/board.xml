@@ -21,7 +21,7 @@
     <include refid="common.board.pagination.footer"/>
   </select>
 
-  <insert id="insertBoard" parameterType="board">
+  <insert id="insertBoard">
     <selectKey resultType="Integer" keyProperty="seq" order="BEFORE">
       SELECT NVL(MAX(seq) + 1, 1) AS seq
         FROM BOARD
@@ -70,5 +70,37 @@
        AND DELETE_YN = false  
        AND seq = #{seq}
   </select>
+
+  <insert id="insertReplyBoard">
+  <selectKey resultType="Integer" keyProperty="seq" order="BEFORE">
+    SELECT NVL(MAX(seq) + 1, 1) AS seq
+      FROM BOARD
+  </selectKey>
+  INSERT INTO BOARD 
+              (seq
+              ,title
+              ,content
+              ,display
+              ,group_id
+              ,group_order
+              ,depth
+              ,delete_yn
+              ,reg_date
+              ,reg_id
+              ,upd_date
+              ,upd_id) 
+        VALUES (#{seq}
+              ,#{title}
+              ,#{content}
+              ,#{display}
+              ,(select group_id from BOARD where seq=#{parentSeq})
+              ,(select group_order+1 from BOARD where seq=#{parentSeq})
+              ,(select depth+1 from BOARD where seq=#{parentSeq})
+              ,#{deleteYn}
+              ,#{regDate}
+              ,#{regId}
+              ,#{updDate}
+              ,#{updId})
+</insert>
 
 </mapper>

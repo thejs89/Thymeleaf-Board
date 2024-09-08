@@ -10,5 +10,6 @@ public interface BoardService {
   List<PageBoard> getBoardList(Map<String,Object> map) throws Exception;
   void insertBoard(Board board) throws Exception;
   Board getBoardView(Integer seq) throws Exception;
+  void insertReplyBoard(Map<String,Object> map) throws Exception;
    
 }

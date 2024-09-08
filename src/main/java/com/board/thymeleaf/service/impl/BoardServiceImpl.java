@@ -51,5 +51,20 @@ public class BoardServiceImpl implements BoardService {
   public Board getBoardView(Integer seq) throws Exception {
     return boardRepo.getBoardView(seq);
   }
+
+  @Transactional(readOnly = false)
+  @Override
+  public void insertReplyBoard(Map<String,Object> map) throws Exception {
+    Date date = new Date();
+
+    map.put("deleteYn", false);
+    map.put("regDate", date);
+    map.put("regId", "jsjeon");
+    map.put("updDate", date);
+    map.put("updId", "jsjeon");
+
+    boardRepo.insertReplyBoard(map);
+
+  }
   
 }

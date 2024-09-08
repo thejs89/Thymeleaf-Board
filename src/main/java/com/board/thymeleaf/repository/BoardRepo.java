@@ -16,5 +16,6 @@ public interface BoardRepo {
   List<PageBoard> getBoardList(Map<String,Object> map);
   Integer insertBoard(Board board);
   Board getBoardView(Integer seq);
+  Integer insertReplyBoard(Map<String,Object> map);
   
 }

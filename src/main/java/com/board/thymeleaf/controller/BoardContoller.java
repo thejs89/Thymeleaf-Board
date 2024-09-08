@@ -1,7 +1,9 @@
 package com.board.thymeleaf.controller;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,7 +19,6 @@ import com.board.thymeleaf.domain.PageBoard;
 import com.board.thymeleaf.domain.Pager;
 import com.board.thymeleaf.service.ifc.BoardService;
 
-import groovyjarjarantlr4.v4.parse.ANTLRParser.sync_return;
 import lombok.RequiredArgsConstructor;
 
 @Controller
@@ -66,11 +67,15 @@ public class BoardContoller {
   }
 
   @PostMapping("/reply/insert")
-  public String insertReplyBoard(@RequestParam("parentSeq") int parentSeq, @ModelAttribute Board board,Model model) throws Exception {
-    System.out.println("parentSeq============"+parentSeq);
-    System.out.println("board==========="+board);
+  public String insertReplyBoard(@RequestParam(required = false) Map<String,Object> map,Model model) throws Exception {
     
-    //boardService.insertBoard(board);
+    map = Optional.of(Optional.ofNullable(map).orElse(new HashMap<>()))
+      .map(m -> {
+        m.put("display", Optional.ofNullable((boolean) m.get("display")).orElse(false));
+        return m;
+      }).get();
+
+    boardService.insertReplyBoard(map);
     return "redirect:/board/list";
   }
 
