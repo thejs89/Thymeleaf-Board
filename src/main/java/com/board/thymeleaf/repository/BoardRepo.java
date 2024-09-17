@@ -17,5 +17,6 @@ public interface BoardRepo {
   Integer insertBoard(Board board);
   Board getBoardView(Integer seq);
   Integer insertReplyBoard(Map<String,Object> map);
+  Integer updateGroupOrd(Map<String,Object> map);
   
 }

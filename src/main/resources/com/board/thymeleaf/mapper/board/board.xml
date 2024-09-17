@@ -101,6 +101,14 @@
               ,#{regId}
               ,#{updDate}
               ,#{updId})
-</insert>
+  </insert>
+
+  <update id= "updateGroupOrd">
+    UPDATE BOARD 
+       SET group_order = group_order+1  
+     WHERE group_id= #{groupId}
+       AND group_order <![CDATA[>]]> #{groupOrder}
+  </update>
+
 
 </mapper>

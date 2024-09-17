@@ -68,10 +68,10 @@ public class BoardContoller {
 
   @PostMapping("/reply/insert")
   public String insertReplyBoard(@RequestParam(required = false) Map<String,Object> map,Model model) throws Exception {
-    
+
     map = Optional.of(Optional.ofNullable(map).orElse(new HashMap<>()))
       .map(m -> {
-        m.put("display", Optional.ofNullable((boolean) m.get("display")).orElse(false));
+        m.put("display", Optional.ofNullable((Boolean) m.get("display")).orElse(false));
         return m;
       }).get();
 
