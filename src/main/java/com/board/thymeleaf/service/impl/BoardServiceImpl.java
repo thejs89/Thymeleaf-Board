@@ -13,7 +13,6 @@ import com.board.thymeleaf.domain.PageBoard;
 import com.board.thymeleaf.repository.BoardRepo;
 import com.board.thymeleaf.service.ifc.BoardService;
 
-import groovyjarjarantlr4.v4.parse.ANTLRParser.notSet_return;
 import lombok.RequiredArgsConstructor;
 
 @Transactional(transactionManager = "boardTxManager", rollbackFor = {Exception.class} )
@@ -74,6 +73,12 @@ public class BoardServiceImpl implements BoardService {
     map.put("updId", "jsjeon");
     boardRepo.insertReplyBoard(map);
 
+  }
+  
+  @Transactional(readOnly = false)
+  @Override
+  public void deleteBoard(Integer seq) throws Exception {
+    boardRepo.deleteBoard(seq);
   }
   
 }

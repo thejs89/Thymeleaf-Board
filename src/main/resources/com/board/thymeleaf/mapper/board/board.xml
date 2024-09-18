@@ -110,5 +110,11 @@
        AND group_order <![CDATA[>]]> #{groupOrder}
   </update>
 
+  <update id= "deleteBoard">
+    UPDATE BOARD
+       SET delete_yn = 0
+     WHERE seq = ${seq} 
+  </update>  
+
 
 </mapper>
