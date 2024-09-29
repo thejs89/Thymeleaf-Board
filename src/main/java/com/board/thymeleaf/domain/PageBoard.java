@@ -26,4 +26,5 @@ public class PageBoard extends PageVO {
   private String regId;
   private String updDate;
   private String updId;
+  private boolean deleteYn;
 }

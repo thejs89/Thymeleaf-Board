@@ -45,7 +45,18 @@
                       <tbody>
                         <tr th:each="item : ${page.contents}">
                           <td th:text="${item.rnum}"></td>
-                          <td><a th:href="@{/board/view(seq=${item.seq})}" th:text="${item.title}"></a></td>
+                          <td>
+                            <th:block th:if="${item.depth>0}">
+                              <img src="/img/dist/level.gif" th:width="(${item.depth}-1)*10" height="16"></img>
+                              RE:
+                            </th:block>
+                            <th:block th:if="!${item.deleteYn}">
+                              <a th:href="@{/board/view(seq=${item.seq})}" th:text="${item.title}"></a>
+                            </th:block>
+                            <th:block th:unless="!${item.deleteYn}">
+                              <a href="javascript:alert('삭제된 글')"  th:text="${item.title}"></a>
+                            </th:block>
+                          </td>
                           <td th:if="${item.display}">공개</td>
                           <td th:unless="${item.display}">비공개</td>
                           <td th:text="${item.updId}"></td>

@@ -20,6 +20,8 @@ import com.board.thymeleaf.domain.Pager;
 import com.board.thymeleaf.service.ifc.BoardService;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.RequestBody;
+
 
 @Controller
 @RequestMapping("/board")
@@ -78,6 +80,13 @@ public class BoardContoller {
     boardService.insertReplyBoard(map);
     return "redirect:/board/list";
   }
+
+  @PostMapping("/remove")
+  public String postMethodName(@RequestParam Integer seq) throws Exception {
+    boardService.deleteBoard(seq);
+    return "redirect:/board/list";
+  }
+  
 
 
 

@@ -5,7 +5,7 @@
   <select id="getBoardList" resultType="pageboard">
    <include refid="common.board.pagination.header"/>
     SELECT SEQ as seq
-          ,TITLE
+          ,case when delete_yn = true then '삭제된 글' else TITLE end as TITLE
           ,CONTENT
           ,DISPLAY
           ,GROUP_ID
@@ -15,9 +15,10 @@
           ,REG_ID
           ,FORMATDATETIME(UPD_DATE, 'yyyy-MM-dd') AS UPD_DATE
           ,UPD_ID
+          ,DELETE_YN
       FROM BOARD
      WHERE 1=1
-      AND DELETE_YN = false
+      --AND DELETE_YN = false
     <include refid="common.board.pagination.footer"/>
   </select>
 
@@ -112,7 +113,7 @@
 
   <update id= "deleteBoard">
     UPDATE BOARD
-       SET delete_yn = 0
+       SET delete_yn = true
      WHERE seq = ${seq} 
   </update>  
 
