@@ -86,6 +86,12 @@ public class BoardContoller {
     boardService.deleteBoard(seq);
     return "redirect:/board/list";
   }
+
+  @GetMapping("/tree")
+  public String getTreeView(@RequestParam(required = false) Map<String,Object> map,Model mode) {
+    return "board/tree";
+  }
+  
   
 
 

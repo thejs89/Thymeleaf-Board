@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="common/defaultLayout">
+  <body>  
+    <th:block layout:fragment="content">
+      <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+          <div class="container-fluid">
+            <div class="row mb-2">
+              <div class="col-sm-6">
+                <h1>조직도</h1>
+              </div>
+              <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                  <li class="breadcrumb-item"><a href="#">Home</a></li>
+                  <li class="breadcrumb-item active">조직도</li>
+                </ol>
+              </div>
+            </div>
+          </div><!-- /.container-fluid -->
+        </section>
+        <div class="card-footer">
+          <button type="button" th:onclick="|javascript:createNode()|" class="btn btn-primary float-left">등록</button>
+          <button type="button" th:onclick="|javascript:saveNode()|" class="btn btn-primary float-right">저장</button>
+        </div>
+        <!-- Main content -->
+        <section class="content">
+          <div class="container-fluid">
+            <div class="row">
+              <div class="col-6">
+                <div class="card">
+                  <!-- /.card-header -->
+                  <div class="card-body" id="jstree">
+                  </div>
+                  <!-- /.card-body -->
+                  <div class="card-footer clearfix">
+                  </div>
+                </div>
+                <!-- /.card -->
+              </div>
+              <!-- /.col -->
+            </div>
+            <!-- /.row -->
+          </div><!-- /.container-fluid -->
+        </section>
+        <!-- /.content -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/themes/default/style.min.css" />
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/jstree.min.js"></script>
+        <script type="text/javascript">
+          var checkList = []
+          var $tree = $("#jstree")
+          $tree.jstree({
+              'core': {
+                "multiple":false,
+                'data' : [
+                          { "id" : "ajson1", "parent" : "#", "text" : "Simple root node" },
+                          { "id" : "ajson2", "parent" : "#", "text" : "Root node 2" },
+                          { "id" : "ajson3", "parent" : "ajson2", "text" : "Child 1" },
+                          { "id" : "ajson4", "parent" : "ajson2", "text" : "Child 2" },
+                        ]
+                        ,  "check_callback": true,  // 요거이 없으면, create_node 안먹음  
+              }
+          });
+          function createNode() {
+            var selectedNode = $tree.jstree("get_selected",true)[0];
+            console.log("test",$tree.get_json('#', { flat: true }))
+            var data =  { "id" : "ajson5", "parent" : "#", "text" : "new Simple root node" }
+            $tree.jstree("create_node", selectedNode.id, data, "last", function(new_node) {
+              $tree.jstree("open_node", $tree.jstree("get_selected"));
+            });
+          }
+        </script>
+      </div>
+    </th:block>
+  </body>
+  </html>
+  
