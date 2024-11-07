@@ -53,23 +53,26 @@
           var checkList = []
           var $tree = $("#jstree")
           $tree.jstree({
-              'core': {
-                "multiple":false,
-                'data' : [
-                          { "id" : "ajson1", "parent" : "#", "text" : "Simple root node" },
-                          { "id" : "ajson2", "parent" : "#", "text" : "Root node 2" },
-                          { "id" : "ajson3", "parent" : "ajson2", "text" : "Child 1" },
-                          { "id" : "ajson4", "parent" : "ajson2", "text" : "Child 2" },
-                        ]
-                        ,  "check_callback": true,  // 요거이 없으면, create_node 안먹음  
-              }
+            'core': {
+              "multiple":false,
+              'data' : [
+                        {  "parent" : "#"        ,"id" : "code0001", "text" : "Simple root node" ,"data": {"nodeCode":"code0001"} },
+                        {  "parent" : "#"        ,"id" : "code0002", "text" : "Root node 2"      ,"data": {"nodeCode":"code0002"} },
+                        {  "parent" : "code0002" ,"id" : "code0003", "text" : "Child 1"          ,"data": {"nodeCode":"code0003"} },
+                        {  "parent" : "code0002" ,"id" : "code0004", "text" : "Child 2"          ,"data": {"nodeCode":"code0004"} },
+                      ]
+                      ,  "check_callback": true,  // 요거이 없으면, create_node 안먹음  
+            }
           });
           function createNode() {
-            var selectedNode = $tree.jstree("get_selected",true)[0];
-            console.log("test",$tree.get_json('#', { flat: true }))
-            var data =  { "id" : "ajson5", "parent" : "#", "text" : "new Simple root node" }
-            $tree.jstree("create_node", selectedNode.id, data, "last", function(new_node) {
-              $tree.jstree("open_node", $tree.jstree("get_selected"));
+            var selectedNodeId = $tree.jstree("get_selected",true)[0].id;
+            var nodeCode = `code${(Math.max(0,...$tree.jstree(true).get_json('#', {flat:true}).map(({data:{nodeCode}}) => (nodeCode.replace(new RegExp("^code"),''))).filter(v=> !isNaN(v)))+1).toString().padStart(4,"0") }`
+            var useYn = 'Y'
+            var data =  { "id" : nodeCode, "parent" : "#", "text" : "new Simple root node", data:{ "nodeCode":nodeCode } }
+            $tree.jstree("create_node", selectedNodeId, data, "last", function(new_node) {
+
+              var newNode = {nodeId:nodeCode}
+       
             });
           }
         </script>
