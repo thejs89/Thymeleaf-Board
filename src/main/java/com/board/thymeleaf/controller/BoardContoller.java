@@ -12,16 +12,17 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.board.thymeleaf.domain.BaseSO;
 import com.board.thymeleaf.domain.Board;
 import com.board.thymeleaf.domain.PageBoard;
 import com.board.thymeleaf.domain.Pager;
 import com.board.thymeleaf.service.ifc.BoardService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.RequestBody;
-
 
 @Controller
 @RequestMapping("/board")
@@ -55,8 +56,8 @@ public class BoardContoller {
   }
 
   @PostMapping("/insert")
-  public String insertBoard(@ModelAttribute Board board,Model model) throws Exception {
-    boardService.insertBoard(board);
+  public String insertBoard(@RequestPart(value = "file") List<MultipartFile> fileList, @RequestParam(required=false) Map<String, Object> map,Model model) throws Exception {  
+    boardService.insertBoard(fileList,map);
     return "redirect:/board/list";
   }
 

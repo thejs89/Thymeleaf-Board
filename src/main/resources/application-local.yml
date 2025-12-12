@@ -24,3 +24,5 @@ thymeleaf:
       username: sa
       password:
 
+path:
+  upload: D:/jsjeon/study/upload

@@ -65,14 +65,13 @@
             }
           });
           function createNode() {
+            console.log("$tree.jstree(true).get_json('#', {flat:true})",$tree.jstree(true).get_json('#', {flat:true}))
             var selectedNodeId = $tree.jstree("get_selected",true)[0].id;
             var nodeCode = `code${(Math.max(0,...$tree.jstree(true).get_json('#', {flat:true}).map(({data:{nodeCode}}) => (nodeCode.replace(new RegExp("^code"),''))).filter(v=> !isNaN(v)))+1).toString().padStart(4,"0") }`
             var useYn = 'Y'
             var data =  { "id" : nodeCode, "parent" : "#", "text" : "new Simple root node", data:{ "nodeCode":nodeCode } }
             $tree.jstree("create_node", selectedNodeId, data, "last", function(new_node) {
-
               var newNode = {nodeId:nodeCode}
-       
             });
           }
         </script>

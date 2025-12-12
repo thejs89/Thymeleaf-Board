@@ -34,7 +34,7 @@
                   </div>
                   <!-- /.card-header -->
                   <!-- form start -->
-                  <form th:action="@{/board/insert}" th:object="${board}" method="post">
+                  <form id="saveForm" th:action="@{/board/insert}" th:object="${board}" method="post" enctype="multipart/form-data">
                     <div class="card-body">
                       <div class="form-group">
                         <label for="exampleInputEmail1">제목</label>
@@ -48,22 +48,17 @@
                         <input type="checkbox" class="form-check-input" th:field="*{display}">
                         <label class="form-check-label" for="display">공개</label>
                       </div>
-                      <!-- <div class="form-group">
-                        <label for="exampleInputFile">File input</label>
-                        <div class="input-group">
-                          <div class="custom-file">
-                            <input type="file" class="custom-file-input" id="exampleInputFile">
-                            <label class="custom-file-label" for="exampleInputFile">Choose file</label>
-                          </div>
-                          <div class="input-group-append">
-                            <span class="input-group-text">Upload</span>
-                          </div>
-                        </div>
-                      </div> -->
+                      <div class="form-group">
+                        <label>첨부파일:</label>
+                        <button type="button" onclick="selectFile(event)">파일선택</button>
+                        <input type="file" id="fileInput" multiple style="display: none;width: 0;opacity: 0;">       
+                        <select id="mySelect" size="8" style="width: 100%;" multiple></select>
+                        <button type="button" onclick="deleteFile(event)">삭제</button>
+                      </div>
                     </div>
                     <!-- /.card-body --> 
                     <div class="card-footer">
-                      <button type="submit" class="btn btn-primary float-right">저장</button>
+                      <button type="button" class="btn btn-primary float-right" onclick="save(event)">저장</button>
                       <button type="button" class="btn btn-primary" th:onclick="|location.href='@{/board/list}'|">목록</button>
                     </div>
                   </form>
@@ -75,6 +70,125 @@
         </section>
         <!-- /.content -->
       </div>
+      <script th:inline="javascript">
+        window.onload = function () {
+          initFiles()
+        };
+
+        const ui = { files:[] }
+        const items = new Proxy(ui.files, {
+          set(target, prop, value) {
+            target[prop] = value;
+            if (!isNaN(prop) || prop === 'length') {
+              renderSelect(target);
+            }
+            return true;
+          },
+          deleteProperty(target, prop) {
+            delete target[prop];
+            renderSelect(target);
+            return true;
+          }
+        });
+
+        const file = document.getElementById("fileInput")
+        const select = document.getElementById("mySelect");
+        const board = /*[[${board}]]*/ {};
+
+        file.addEventListener('change', (event) => {
+          const orgFiles = [...(file.files || [])]
+          const files = orgFiles.map((file)=> {
+            return {mode:"REG", key: file.key || `new::${file.name}`, name:file.name, size:file.size,type:file.type,file }
+          })
+          setItems([...ui.files,...files])
+        });
+
+        function initFiles() {
+          const updFiles = [...(Array.isArray(board.file) ? board.file : [board.file].filter(v=> !!v))].map(({key,mode="UPD",...o})=> ({ ...o,mode,key : key || String(o.seq||'') }))
+          setItems(updFiles)
+        }
+
+        function selectFile(e) {
+          if(e && e.preventDefault) try { e.preventDefault() } catch (e) {}
+          file.click()
+        }
+
+        function renderSelect(items) {
+          select.innerHTML = "";
+          items.forEach(item => {
+            const option = document.createElement("option");
+            option.value = item.key;
+            option.textContent = item.mode === "REG"? `${item.name} (새파일)` : item.mode === "DEL" ? `${item.name} (삭제)` : item.name;
+            select.appendChild(option);
+          });
+        }
+        
+        function setItems(newArray) {
+          while (items.length) items.pop();
+          newArray.forEach(item => items.push(item));
+        }
+
+        function deleteFile(e) {
+          e.preventDefault()
+
+          const fileList = ui.files
+          const flieSelect = select
+
+          const selectedFiles = [...flieSelect.options].filter(({selected =false}) => selected).map(({value})=> {
+            return fileList.find(({ key })=> key === value)
+          })
+
+          const updateFileList = [...fileList.map(o => (
+            {
+              ...o,
+              mode: selectedFiles.findIndex(({ key }) => o.key === key) < 0 ? o.mode : o.mode === "REG" ? '' : "DEL"
+            }
+          )).filter(({ mode }) => ["REG", "UPD", "DEL"].includes(mode))]
+          
+          setItems(updateFileList)
+
+        }
+
+        function save(e) {
+          e.preventDefault()
+
+          const uploadFiles = ui.files.filter(({ mode }) => mode === "REG")
+          const removeFiles = ui.files.filter(({ mode }) => mode === "DEL")
+
+          console.log('uploadFiles', uploadFiles)
+          console.log('removeFiles', removeFiles)
+
+          const form = document.getElementById("saveForm")
+          const formData = new FormData(form);
+
+          const baseKey = { id: 'BOARD' }
+          formData.append("baseFileInfo", JSON.stringify(baseKey))
+
+          // upload
+          const fileInfo = uploadFiles.map(({ file, key, mode, name, size, type, ...o }, i) => {
+            formData.append('file', file)
+            return { ...o }
+          })
+          formData.append('fileInfo', JSON.stringify(fileInfo))
+          
+          // remove
+          const remove = { key: removeFiles.map(({ key }) => key )}
+          formData.append("removeFiles", JSON.stringify(remove))
+          
+          
+          for (let [key, value] of formData.entries()) {
+              console.log(`${key}: ${value}`);
+          }
+
+          fetch("/board/insert", {
+            method: "POST",
+            body: formData,
+          })
+          
+     
+        }
+
+      </script> 
     </th:block>
   </body>
   </html>
