@@ -14,7 +14,7 @@ public interface BoardService {
   void insertBoard(List<MultipartFile> fileList,Map<String, Object> map) throws Exception;
   Board getBoardView(Integer seq) throws Exception;
   List<BoardFile> getBoardFileList(Integer boardSeq) throws Exception;
-  void insertReplyBoard(Map<String,Object> map) throws Exception;
+  void insertReplyBoard(List<MultipartFile> fileList, Map<String,Object> map) throws Exception;
   void deleteBoard(Integer seq) throws Exception;
    
 }

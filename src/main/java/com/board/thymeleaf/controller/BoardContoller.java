@@ -88,9 +88,12 @@ public class BoardContoller {
   }
 
   @PostMapping("/reply/insert")
-  public String insertReplyBoard(@RequestParam(required = false) Map<String, Object> map, Model model) throws Exception {
+  public String insertReplyBoard(
+      @RequestPart(value = "file", required = false) List<MultipartFile> fileList,
+      @RequestParam(required = false) Map<String, Object> map,
+      Model model) throws Exception {
     Map<String, Object> processedMap = processReplyBoardMap(map);
-    boardService.insertReplyBoard(processedMap);
+    boardService.insertReplyBoard(fileList, processedMap);
     return REDIRECT_LIST;
   }
 

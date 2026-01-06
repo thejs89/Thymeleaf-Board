@@ -1,9 +1,9 @@
 package com.board.thymeleaf.service.impl;
 
 import java.io.File;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -47,7 +47,7 @@ public class BoardServiceImpl implements BoardService {
   private final ObjectMapper objectMapper = new ObjectMapper();
 
   @Value("${path.upload}")
-  private String uploadPath;
+  private String UPLOAD_PATH;
 
   @Transactional(readOnly = true)
   @Override
@@ -62,9 +62,7 @@ public class BoardServiceImpl implements BoardService {
     setDefaultBoardValues(board);
     boardRepo.insertBoard(board);
 
-    if (hasValidFiles(fileList)) {
-      uploadFiles(board.getSeq(), fileList, map);
-    }
+    uploadFiles(board.getSeq(), fileList, map);
   }
 
   @Transactional(readOnly = true)
@@ -81,7 +79,7 @@ public class BoardServiceImpl implements BoardService {
 
   @Transactional(readOnly = false)
   @Override
-  public void insertReplyBoard(Map<String, Object> map) throws Exception {
+  public void insertReplyBoard(List<MultipartFile> fileList, Map<String, Object> map) throws Exception {
     String parentSeqStr = (String) map.get("parentSeq");
     if (parentSeqStr == null) {
       throw new IllegalArgumentException("parentSeq는 필수입니다.");
@@ -95,6 +93,12 @@ public class BoardServiceImpl implements BoardService {
     updateGroupOrder(parentBoard.getGroupId(), parentBoard.getGroupOrder());
     setDefaultReplyBoardValues(map);
     boardRepo.insertReplyBoard(map);
+    
+    // insertReplyBoard 후 selectKey로 seq가 map에 설정됨
+    Integer replySeq = (Integer) map.get("seq");
+    if (replySeq != null) {
+      uploadFiles(replySeq, fileList, map);
+    }
   }
 
   @Transactional(readOnly = false)
@@ -137,30 +141,19 @@ public class BoardServiceImpl implements BoardService {
   }
 
   /**
-   * 유효한 파일이 있는지 확인
-   */
-  private boolean hasValidFiles(List<MultipartFile> fileList) {
-    if (fileList == null || fileList.isEmpty()) {
-      return false;
-    }
-    return fileList.stream().anyMatch(file -> file != null && !file.isEmpty());
-  }
-
-  /**
    * 파일 업로드 처리
    */
   private void uploadFiles(Integer boardSeq, List<MultipartFile> fileList, Map<String, Object> map) throws Exception {
     List<MultipartFile> validFileList = filterValidFiles(fileList);
-    if (validFileList.isEmpty()) {
+    if (validFileList.isEmpty()) { 
       return;
     }
 
     List<Map<String, Object>> fileInfoList = parseFileInfoList(map, validFileList.size());
     Map<String, Object> baseFileInfo = parseBaseFileInfo(map);
 
-    List<Map<String, Object>> fileUploadParams = createFileUploadParams(
-        boardSeq, validFileList, fileInfoList, baseFileInfo);
-
+    List<Map<String, Object>> fileUploadParams = createFileUploadParams(boardSeq, validFileList, fileInfoList, baseFileInfo);
+    
     processFileUploads(fileUploadParams);
   }
 
@@ -168,6 +161,9 @@ public class BoardServiceImpl implements BoardService {
    * 유효한 파일만 필터링
    */
   private List<MultipartFile> filterValidFiles(List<MultipartFile> fileList) {
+    if (fileList == null || fileList.isEmpty()) {
+      return new ArrayList<>();
+    }
     return fileList.stream()
         .filter(file -> file != null && !file.isEmpty())
         .collect(Collectors.toList());
@@ -310,11 +306,11 @@ public class BoardServiceImpl implements BoardService {
   /**
    * 파일을 디스크에 저장
    */
-  private String saveFileToDisk(MultipartFile file, String uploadPath, String fileName) throws Exception {
+  private String saveFileToDisk(MultipartFile file, String relativePath, String fileName) throws Exception {
     String extension = com.google.common.io.Files.getFileExtension(fileName);
     String suffix = String.format(".%s", extension);
 
-    Path targetPath = Paths.get(uploadPath, uploadPath);
+    Path targetPath = Paths.get(UPLOAD_PATH, relativePath);
     if (!java.nio.file.Files.exists(targetPath)) {
       java.nio.file.Files.createDirectories(targetPath);
     }
@@ -322,7 +318,7 @@ public class BoardServiceImpl implements BoardService {
     File saveFile = File.createTempFile(
         TEMP_FILE_PREFIX,
         suffix,
-        new File(uploadPath + "/" + uploadPath));
+        new File(UPLOAD_PATH + "/" + relativePath));
     file.transferTo(saveFile);
 
     return saveFile.getName();
