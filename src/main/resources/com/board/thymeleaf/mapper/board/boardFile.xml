@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.board.thymeleaf.repository.BoardFileRepo">
+
+  <insert id="insertBoardFile">
+    <selectKey resultType="Integer" keyProperty="fileSeq" order="BEFORE">
+      SELECT NVL(MAX(file_seq) + 1, 1) AS file_seq
+        FROM BOARD_FILE
+    </selectKey>
+    INSERT INTO BOARD_FILE 
+                (file_seq
+                ,board_seq
+                ,file_name
+                ,file_size
+                ,upload_name
+                ,upload_path
+                ,delete_yn
+                ,reg_date
+                ,reg_id
+                ,upd_date
+                ,upd_id) 
+         VALUES (#{fileSeq}
+                ,#{boardSeq}
+                ,#{fileName}
+                ,#{fileSize}
+                ,#{uploadName}
+                ,#{uploadPath}
+                ,#{deleteYn}
+                ,#{regDate}
+                ,#{regId}
+                ,#{updDate}
+                ,#{updId})
+  </insert>
+
+  <select id="getBoardFileList" resultType="boardFile">
+    SELECT file_seq as fileSeq
+          ,board_seq as boardSeq
+          ,file_name as fileName
+          ,file_size as fileSize
+          ,upload_name as uploadName
+          ,upload_path as uploadPath
+          ,delete_yn as deleteYn
+          ,reg_date as regDate
+          ,reg_id as regId
+          ,upd_date as updDate
+          ,upd_id as updId
+      FROM BOARD_FILE
+     WHERE board_seq = #{boardSeq}
+       AND delete_yn = false
+     ORDER BY file_seq ASC
+  </select>
+
+</mapper>
+

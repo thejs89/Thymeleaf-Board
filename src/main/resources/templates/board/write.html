@@ -184,8 +184,22 @@
             method: "POST",
             body: formData,
           })
-          
-     
+          .then(response => {
+            if (response.redirected) {
+              window.location.href = response.url;
+            } else {
+              return response.text();
+            }
+          })
+          .then(data => {
+            if (data) {
+              window.location.href = "/board/list";
+            }
+          })
+          .catch(error => {
+            console.error('Error:', error);
+            alert('저장 중 오류가 발생했습니다.');
+          });
         }
 
       </script> 
