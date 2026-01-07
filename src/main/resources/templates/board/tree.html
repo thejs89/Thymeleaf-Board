@@ -21,58 +21,467 @@
             </div>
           </div><!-- /.container-fluid -->
         </section>
-        <div class="card-footer">
-          <button type="button" th:onclick="|javascript:createNode()|" class="btn btn-primary float-left">등록</button>
-          <button type="button" th:onclick="|javascript:saveNode()|" class="btn btn-primary float-right">저장</button>
-        </div>
         <!-- Main content -->
         <section class="content">
           <div class="container-fluid">
             <div class="row">
-              <div class="col-6">
+              <!-- 트리 영역 -->
+              <div class="col-md-6">
                 <div class="card">
-                  <!-- /.card-header -->
-                  <div class="card-body" id="jstree">
+                  <div class="card-header">
+                    <h3 class="card-title">조직도</h3>
+                    <div class="card-tools">
+                      <button type="button" onclick="startAddOrganization()" class="btn btn-sm btn-primary">
+                        <i class="fas fa-plus"></i> 조직 추가
+                      </button>
+                      <button type="button" onclick="startMoveOrganization()" class="btn btn-sm btn-success">
+                        <i class="fas fa-arrows-alt"></i> 조직 이동
+                      </button>
+                      <button type="button" onclick="cancelOperation()" class="btn btn-sm btn-secondary">
+                        <i class="fas fa-times"></i> 취소
+                      </button>
+                    </div>
                   </div>
-                  <!-- /.card-body -->
-                  <div class="card-footer clearfix">
+                  <div class="card-body" id="jstree" style="min-height: 500px;">
                   </div>
                 </div>
-                <!-- /.card -->
               </div>
-              <!-- /.col -->
+              <!-- 작업 정보 패널 -->
+              <div class="col-md-6">
+                <!-- 조직 추가 패널 -->
+                <div class="card card-primary" id="addOrgPanel" style="display: none;">
+                  <div class="card-header">
+                    <h3 class="card-title"><i class="fas fa-plus"></i> 새 조직 추가</h3>
+                  </div>
+                  <div class="card-body">
+                    <div class="form-group">
+                      <label>조직명</label>
+                      <input type="text" class="form-control" id="newOrgName" placeholder="조직명을 입력하세요">
+                    </div>
+                    <div class="form-group">
+                      <label>부모 조직</label>
+                      <div class="form-control" id="selectedParentInfo" style="background-color: #e9ecef; min-height: 40px; padding: 8px;">
+                        <span class="text-muted">트리에서 부모 조직을 클릭하세요 (선택하지 않으면 루트에 추가)</span>
+                      </div>
+                    </div>
+                    <div class="alert alert-info">
+                      <i class="fas fa-info-circle"></i> 트리에서 부모 조직을 클릭한 후 조직명을 입력하고 "추가" 버튼을 클릭하세요.
+                    </div>
+                    <button type="button" class="btn btn-primary btn-block" onclick="addOrganization()">
+                      <i class="fas fa-save"></i> 추가
+                    </button>
+                  </div>
+                </div>
+                
+                <!-- 조직 이동 패널 -->
+                <div class="card card-success" id="moveOrgPanel" style="display: none;">
+                  <div class="card-header">
+                    <h3 class="card-title"><i class="fas fa-arrows-alt"></i> 조직 이동</h3>
+                  </div>
+                  <div class="card-body">
+                    <div class="form-group">
+                      <label>1단계: 이동할 조직</label>
+                      <div class="form-control" id="selectedOrgInfo" style="background-color: #e9ecef; min-height: 50px; padding: 8px;">
+                        <span class="text-muted">트리에서 이동할 조직을 클릭하세요</span>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label>2단계: 새 부모 조직</label>
+                      <div class="form-control" id="newParentInfo" style="background-color: #e9ecef; min-height: 50px; padding: 8px;">
+                        <span class="text-muted">트리에서 새 부모 조직을 클릭하세요</span>
+                      </div>
+                    </div>
+                    <div class="alert alert-warning">
+                      <i class="fas fa-exclamation-triangle"></i> 
+                      <strong>사용 방법:</strong><br>
+                      1. 트리에서 <strong>이동할 조직</strong>을 클릭하세요<br>
+                      2. 트리에서 <strong>새 부모 조직</strong>을 클릭하세요<br>
+                      3. "이동" 버튼을 클릭하세요
+                    </div>
+                    <button type="button" class="btn btn-success btn-block" onclick="executeMoveOrganization()">
+                      <i class="fas fa-check"></i> 이동
+                    </button>
+                  </div>
+                </div>
+                
+                <!-- 기본 안내 패널 -->
+                <div class="card" id="defaultPanel">
+                  <div class="card-body">
+                    <h5><i class="fas fa-info-circle"></i> 사용 안내</h5>
+                    <hr>
+                    <p><strong>조직 추가:</strong></p>
+                    <ol>
+                      <li>"조직 추가" 버튼 클릭</li>
+                      <li>트리에서 부모 조직 클릭 (선택사항)</li>
+                      <li>조직명 입력</li>
+                      <li>"추가" 버튼 클릭</li>
+                    </ol>
+                    <hr>
+                    <p><strong>조직 이동:</strong></p>
+                    <ol>
+                      <li>"조직 이동" 버튼 클릭</li>
+                      <li>트리에서 이동할 조직 클릭</li>
+                      <li>트리에서 새 부모 조직 클릭</li>
+                      <li>"이동" 버튼 클릭</li>
+                    </ol>
+                  </div>
+                </div>
+              </div>
             </div>
             <!-- /.row -->
           </div><!-- /.container-fluid -->
         </section>
         <!-- /.content -->
+        
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/themes/default/style.min.css" />
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/jstree.min.js"></script>
         <script type="text/javascript">
-          var checkList = []
-          var $tree = $("#jstree")
-          $tree.jstree({
-            'core': {
-              "multiple":false,
-              'data' : [
-                        {  "parent" : "#"        ,"id" : "code0001", "text" : "Simple root node" ,"data": {"nodeCode":"code0001"} },
-                        {  "parent" : "#"        ,"id" : "code0002", "text" : "Root node 2"      ,"data": {"nodeCode":"code0002"} },
-                        {  "parent" : "code0002" ,"id" : "code0003", "text" : "Child 1"          ,"data": {"nodeCode":"code0003"} },
-                        {  "parent" : "code0002" ,"id" : "code0004", "text" : "Child 2"          ,"data": {"nodeCode":"code0004"} },
-                      ]
-                      ,  "check_callback": true,  // 요거이 없으면, create_node 안먹음  
-            }
+          // ============================================
+          // 전역 변수
+          // ============================================
+          var $tree = $("#jstree");
+          var MODE = {
+            NONE: null,
+            ADD: 'add',
+            MOVE: 'move'
+          };
+          
+          var state = {
+            currentMode: MODE.NONE,        // 현재 작업 모드
+            selectedParentId: null,       // 조직 추가: 선택된 부모 ID
+            selectedOrgId: null,          // 조직 이동: 이동할 조직 ID
+            newParentId: null             // 조직 이동: 새 부모 ID
+          };
+          
+          // ============================================
+          // 초기화
+          // ============================================
+          $(document).ready(function() {
+            loadTreeData();
           });
-          function createNode() {
-            console.log("$tree.jstree(true).get_json('#', {flat:true})",$tree.jstree(true).get_json('#', {flat:true}))
-            var selectedNodeId = $tree.jstree("get_selected",true)[0].id;
-            var nodeCode = `code${(Math.max(0,...$tree.jstree(true).get_json('#', {flat:true}).map(({data:{nodeCode}}) => (nodeCode.replace(new RegExp("^code"),''))).filter(v=> !isNaN(v)))+1).toString().padStart(4,"0") }`
-            var useYn = 'Y'
-            var data =  { "id" : nodeCode, "parent" : "#", "text" : "new Simple root node", data:{ "nodeCode":nodeCode } }
-            $tree.jstree("create_node", selectedNodeId, data, "last", function(new_node) {
-              var newNode = {nodeId:nodeCode}
+          
+          // ============================================
+          // 트리 데이터 로드 및 초기화
+          // ============================================
+          
+          /**
+           * 서버에서 트리 데이터를 가져와서 트리 초기화
+           */
+          function loadTreeData() {
+            fetch('/board/tree/api')
+              .then(function(response) {
+                if (!response.ok) {
+                  throw new Error('데이터 로드 실패');
+                }
+                return response.json();
+              })
+              .then(function(treeData) {
+                initJstree(treeData);
+                console.log("treeData",treeData)
+              })
+              .catch(function(error) {
+                console.error('트리 데이터 로드 실패:', error);
+                alert('조직 데이터를 불러오는데 실패했습니다.');
+              });
+          }
+          
+          /**
+           * jstree 초기화
+           */
+          function initJstree(treeData) {
+            // 기존 트리 제거
+            if ($tree.jstree(true)) {
+              $tree.jstree('destroy');
+            }
+            
+            // 이벤트 리스너 제거
+            $tree.off('select_node.jstree');
+            
+            // 트리 생성
+            $tree.jstree({
+              'core': {
+                "multiple": false,
+                "check_callback": true,
+                'data': treeData
+              }
             });
+            
+            // 노드 선택 이벤트 등록
+            $tree.on('select_node.jstree', onNodeSelected);
+          }
+          
+          // ============================================
+          // 이벤트 핸들러
+          // ============================================
+          
+          /**
+           * 트리 노드 선택 이벤트 핸들러
+           */
+          function onNodeSelected(e, data) {
+            var node = data.node;
+            var orgName = node.text;
+            var orgId = parseOrgId(node.id);
+            
+            if (state.currentMode === MODE.ADD) {
+              handleAddModeSelection(orgId, orgName);
+            } else if (state.currentMode === MODE.MOVE) {
+              handleMoveModeSelection(orgId, orgName);
+            }
+          }
+          
+          /**
+           * 조직 추가 모드에서 노드 선택 처리
+           */
+          function handleAddModeSelection(orgId, orgName) {
+            state.selectedParentId = orgId;
+            var displayText = orgId === null ? '루트 (CEO)' : orgName;
+            console.log("displayText",displayText)
+            updateParentInfo(displayText);
+          }
+          
+          /**
+           * 조직 이동 모드에서 노드 선택 처리
+           */
+          function handleMoveModeSelection(orgId, orgName) {
+            // 1단계: 이동할 조직 선택
+            if (state.selectedOrgId === null) {
+              if (orgId === null) {
+                alert('루트 노드(CEO)는 이동할 수 없습니다.');
+                clearTreeSelection();
+                return;
+              }
+              state.selectedOrgId = orgId;
+              updateSelectedOrgInfo(orgName, orgId, true);
+              updateNewParentInfo('트리에서 새 부모 조직을 클릭하세요', false);
+            } 
+            // 2단계: 새 부모 선택
+            else {
+              if (orgId === state.selectedOrgId) {
+                alert('자기 자신을 부모로 선택할 수 없습니다.');
+                clearTreeSelection();
+                return;
+              }
+              state.newParentId = orgId;
+              var parentText = orgId === null ? '루트 (CEO)' : orgName;
+              updateNewParentInfo(parentText, true, orgId);
+            }
+          }
+          
+          // ============================================
+          // UI 업데이트 함수
+          // ============================================
+          
+          /**
+           * 부모 조직 정보 업데이트 (조직 추가)
+           */
+          function updateParentInfo(text) {
+            console.log("text",text)
+            var html = '<strong class="text-primary">' + text + '</strong>';
+            $('#selectedParentInfo').html(html);
+          }
+          
+          /**
+           * 이동할 조직 정보 업데이트 (조직 이동 1단계)
+           */
+          function updateSelectedOrgInfo(orgName, orgId, isComplete) {
+            var html = '<strong class="text-primary">✓ ' + orgName + '</strong> <span class="text-muted">(ID: ' + orgId + ')</span>';
+            if (isComplete) {
+              html += '<br><small class="text-success">1단계 완료!</small>';
+            }
+            $('#selectedOrgInfo').html(html);
+          }
+          
+          /**
+           * 새 부모 조직 정보 업데이트 (조직 이동 2단계)
+           */
+          function updateNewParentInfo(text, isComplete, orgId) {
+            if (isComplete) {
+              var idText = orgId === null ? 'ROOT' : orgId;
+              var html = '<strong class="text-success">✓ ' + text + '</strong> <span class="text-muted">(ID: ' + idText + ')</span>';
+              html += '<br><small class="text-success">2단계 완료! 이동 버튼을 클릭하세요.</small>';
+              $('#newParentInfo').html(html);
+            } else {
+              $('#newParentInfo').html('<span class="text-muted">' + text + '</span>');
+            }
+          }
+          
+          // ============================================
+          // 작업 모드 관리
+          // ============================================
+          
+          /**
+           * 조직 추가 모드 시작
+           */
+          function startAddOrganization() {
+            resetState();
+            state.currentMode = MODE.ADD;
+            
+            $('#newOrgName').val('');
+            updateParentInfo('트리에서 부모 조직을 클릭하세요 (선택하지 않으면 루트에 추가)');
+            
+            showPanel('add');
+            clearTreeSelection();
+          }
+          
+          /**
+           * 조직 이동 모드 시작
+           */
+          function startMoveOrganization() {
+            resetState();
+            state.currentMode = MODE.MOVE;
+            
+            $('#selectedOrgInfo').html('<span class="text-muted">트리에서 이동할 조직을 클릭하세요</span>');
+            $('#newParentInfo').html('<span class="text-muted">트리에서 새 부모 조직을 클릭하세요</span>');
+            
+            showPanel('move');
+            clearTreeSelection();
+          }
+          
+          /**
+           * 작업 취소
+           */
+          function cancelOperation() {
+            resetState();
+            showPanel('default');
+            clearTreeSelection();
+          }
+          
+          /**
+           * 상태 초기화
+           */
+          function resetState() {
+            state.currentMode = MODE.NONE;
+            state.selectedParentId = null;
+            state.selectedOrgId = null;
+            state.newParentId = null;
+            $('#newOrgName').val('');
+          }
+          
+          /**
+           * 패널 표시/숨김
+           */
+          function showPanel(panelName) {
+            $('#defaultPanel').hide();
+            $('#addOrgPanel').hide();
+            $('#moveOrgPanel').hide();
+            
+            if (panelName === 'add') {
+              $('#addOrgPanel').show();
+            } else if (panelName === 'move') {
+              $('#moveOrgPanel').show();
+            } else {
+              $('#defaultPanel').show();
+            }
+          }
+          
+          // ============================================
+          // API 호출 함수
+          // ============================================
+          
+          /**
+           * 조직 추가 실행
+           */
+          function addOrganization() {
+            // 입력 검증
+            var orgName = $('#newOrgName').val().trim();
+            if (!orgName) {
+              alert('조직명을 입력해주세요.');
+              return;
+            }
+            
+            // 요청 데이터 생성
+            var formData = new URLSearchParams();
+            formData.append('orgName', orgName);
+            if (state.selectedParentId !== null) {
+              formData.append('parentOrgId', state.selectedParentId);
+            }
+            
+            // 서버 요청
+            callApi('/board/tree/api/add', formData, function(result) {
+              if (result.success) {
+                alert('조직이 추가되었습니다.');
+                resetState();
+                showPanel('default');
+                loadTreeData();
+              } else {
+                alert('조직 추가 실패: ' + (result.message || '알 수 없는 오류'));
+              }
+            });
+          }
+          
+          /**
+           * 조직 이동 실행
+           */
+          function executeMoveOrganization() {
+            // 검증
+            if (state.selectedOrgId === null) {
+              alert('1단계: 이동할 조직을 선택해주세요.\n\n트리에서 이동할 조직을 클릭하세요.');
+              return;
+            }
+            
+            if (state.newParentId === null) {
+              alert('2단계: 새 부모 조직을 선택해주세요.\n\n트리에서 새 부모 조직을 클릭하세요.');
+              return;
+            }
+            
+            // 요청 데이터 생성
+            var formData = new URLSearchParams();
+            formData.append('orgId', state.selectedOrgId);
+            formData.append('newParentId', state.newParentId);
+            
+            // 서버 요청
+            callApi('/board/tree/api/move', formData, function(result) {
+              if (result.success) {
+                alert('조직이 이동되었습니다.');
+                resetState();
+                showPanel('default');
+                loadTreeData();
+              } else {
+                alert('조직 이동 실패: ' + (result.message || '알 수 없는 오류'));
+              }
+            });
+          }
+          
+          /**
+           * 공통 API 호출 함수
+           */
+          function callApi(url, formData, onSuccess) {
+            fetch(url, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+              },
+              body: formData
+            })
+            .then(function(response) {
+              return response.json();
+            })
+            .then(function(result) {
+              onSuccess(result);
+            })
+            .catch(function(error) {
+              console.error('API 호출 실패:', error);
+              alert('작업 중 오류가 발생했습니다.');
+            });
+          }
+          
+          // ============================================
+          // 유틸리티 함수
+          // ============================================
+          
+          /**
+           * 조직 ID 파싱 (#는 null로 변환)
+           */
+          function parseOrgId(id) {
+            return id === '#' ? null : parseInt(id);
+          }
+          
+          /**
+           * 트리 선택 해제
+           */
+          function clearTreeSelection() {
+            $tree.jstree("deselect_all");
           }
         </script>
       </div>

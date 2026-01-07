@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.board.thymeleaf.repository.OrganizationRepo">
+
+  <!-- 모든 조직 조회 -->
+  <select id="findAll" resultType="organization">
+    SELECT org_id as orgId
+          ,org_name as orgName
+      FROM organization
+     ORDER BY org_id ASC
+  </select>
+
+  <!-- 특정 조직의 부모 조직 ID 조회 (직접 부모만, depth=1) -->
+  <select id="findParentId" resultType="Long">
+    SELECT ancestor
+      FROM organization_closure
+     WHERE descendant = #{orgId}
+       AND depth = 1
+       AND ancestor != descendant
+     LIMIT 1
+  </select>
+
+  <!-- 다음 조직 ID 조회 -->
+  <select id="getNextOrgId" resultType="Long">
+    SELECT NVL(MAX(org_id) + 1, 1) AS next_id
+      FROM organization
+  </select>
+
+  <!-- 조직 추가 -->
+  <insert id="insertOrganization">
+    INSERT INTO organization (org_id, org_name)
+    VALUES (#{orgId}, #{orgName})
+  </insert>
+
+  <!-- 조직 자기 자신 연결 추가 (depth=0) -->
+  <insert id="insertSelfRelation">
+    INSERT INTO organization_closure (ancestor, descendant, depth)
+    VALUES (#{orgId}, #{orgId}, 0)
+  </insert>
+
+  <!-- 부모와의 관계 추가 (부모의 모든 조상과의 관계 포함) -->
+  <insert id="insertParentRelations">
+    INSERT INTO organization_closure (ancestor, descendant, depth)
+    SELECT ancestor, #{newOrgId}, depth + 1
+      FROM organization_closure
+     WHERE descendant = #{parentOrgId}
+  </insert>
+
+  <!-- 조직의 기존 부모 관계 제거 (자기 자신 제외) -->
+  <delete id="deleteParentRelations">
+    DELETE FROM organization_closure
+     WHERE descendant = #{orgId}
+       AND ancestor != #{orgId}
+  </delete>
+
+  <!-- 조직 이동 (새 부모로 이동) -->
+  <insert id="moveToNewParent">
+    INSERT INTO organization_closure (ancestor, descendant, depth)
+    SELECT p.ancestor, c.descendant, p.depth + c.depth + 1
+      FROM organization_closure p
+     INNER JOIN organization_closure c
+        ON p.descendant = #{newParentId}
+       AND c.ancestor = #{orgId}
+  </insert>
+
+</mapper>
+

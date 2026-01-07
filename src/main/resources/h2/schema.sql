@@ -28,3 +28,16 @@ CREATE TABLE board_file (
 	FOREIGN KEY (board_seq) REFERENCES board(seq)
 );
 
+CREATE TABLE organization (
+    org_id      NUMBER PRIMARY KEY,
+    org_name    VARCHAR2(100) NOT NULL
+);
+
+CREATE TABLE organization_closure (
+    ancestor    NUMBER NOT NULL,
+    descendant  NUMBER NOT NULL,
+    depth       NUMBER NOT NULL,
+    CONSTRAINT pk_org_closure PRIMARY KEY (ancestor, descendant),
+    CONSTRAINT fk_org_ancestor FOREIGN KEY (ancestor) REFERENCES organization(org_id),
+    CONSTRAINT fk_org_descendant FOREIGN KEY (descendant) REFERENCES organization(org_id)
+);
