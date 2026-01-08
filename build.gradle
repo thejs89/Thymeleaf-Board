@@ -33,6 +33,12 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
 	implementation group: 'com.google.guava', name: 'guava', version: '11.0.2'
+	
+	// Mail 모듈
+	implementation 'org.springframework.boot:spring-boot-starter-mail'
+	
+	// Apache Commons IO (파일 읽기용)
+	implementation 'commons-io:commons-io:2.11.0'
 
 }
 

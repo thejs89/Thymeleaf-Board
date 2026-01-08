@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="common/defaultLayout">
+  <body>
+    <th:block layout:fragment="content">
+      <div class="content-wrapper">
+        <section class="content-header">
+          <div class="container-fluid">
+            <div class="row mb-2">
+              <div class="col-sm-6">
+                <h1>비밀번호 재설정</h1>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="content">
+          <div class="container-fluid">
+            <div class="row">
+              <div class="col-md-6 offset-md-3">
+                <div class="card card-primary">
+                  <div class="card-header">
+                    <h3 class="card-title">새 비밀번호 설정</h3>
+                  </div>
+                  
+                  <form id="resetForm">
+                    <div class="card-body">
+                      <div class="form-group">
+                        <label>이메일</label>
+                        <input type="email" 
+                               class="form-control" 
+                               th:value="${email}" 
+                               disabled>
+                      </div>
+                      
+                      <div class="form-group">
+                        <label for="newPassword">새 비밀번호</label>
+                        <input type="password" 
+                               class="form-control" 
+                               id="newPassword" 
+                               name="newPassword" 
+                               placeholder="새 비밀번호를 입력하세요"
+                               required
+                               minlength="8">
+                        <small class="form-text text-muted">
+                          비밀번호는 최소 8자 이상이어야 합니다.
+                        </small>
+                      </div>
+                      
+                      <div class="form-group">
+                        <label for="confirmPassword">비밀번호 확인</label>
+                        <input type="password" 
+                               class="form-control" 
+                               id="confirmPassword" 
+                               name="confirmPassword" 
+                               placeholder="비밀번호를 다시 입력하세요"
+                               required>
+                      </div>
+                      
+                      <div id="errorMessage" class="alert alert-danger" style="display: none;" role="alert"></div>
+                      <div id="successMessage" class="alert alert-success" style="display: none;" role="alert"></div>
+                    </div>
+                    
+                    <div class="card-footer">
+                      <button type="button" class="btn btn-primary" onclick="resetPassword()">비밀번호 변경</button>
+                      <button type="button" class="btn btn-secondary" onclick="location.href='/board/list'">취소</button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <script th:inline="javascript">
+        const token = /*[[${token}]]*/ '';
+        
+        function resetPassword() {
+          const newPassword = document.getElementById('newPassword').value;
+          const confirmPassword = document.getElementById('confirmPassword').value;
+          const errorDiv = document.getElementById('errorMessage');
+          const successDiv = document.getElementById('successMessage');
+          
+          // 에러 메시지 숨기기
+          errorDiv.style.display = 'none';
+          successDiv.style.display = 'none';
+          
+          // 유효성 검사
+          if (!newPassword || newPassword.trim() === '') {
+            showError('새 비밀번호를 입력해주세요.');
+            return;
+          }
+          
+          if (newPassword.length < 8) {
+            showError('비밀번호는 최소 8자 이상이어야 합니다.');
+            return;
+          }
+          
+          if (newPassword !== confirmPassword) {
+            showError('비밀번호가 일치하지 않습니다.');
+            return;
+          }
+          
+          fetch('/password/reset', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: new URLSearchParams({
+              token: token,
+              newPassword: newPassword,
+              confirmPassword: confirmPassword
+            })
+          })
+          .then(response => response.json())
+          .then(data => {
+            if (data.success) {
+              successDiv.textContent = data.message;
+              successDiv.style.display = 'block';
+              setTimeout(() => {
+                location.href = '/password/reset-request';
+              }, 2000);
+            } else {
+              showError(data.message || '비밀번호 변경에 실패했습니다.');
+            }
+          })
+          .catch(error => {
+            console.error('Error:', error);
+            showError('오류가 발생했습니다.');
+          });
+        }
+        
+        function showError(message) {
+          const errorDiv = document.getElementById('errorMessage');
+          errorDiv.textContent = message;
+          errorDiv.style.display = 'block';
+        }
+      </script>
+    </th:block>
+  </body>
+</html>
+

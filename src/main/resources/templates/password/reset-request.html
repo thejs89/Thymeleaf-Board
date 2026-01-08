@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="common/defaultLayout">
+  <body>
+    <th:block layout:fragment="content">
+      <div class="content-wrapper">
+        <section class="content-header">
+          <div class="container-fluid">
+            <div class="row mb-2">
+              <div class="col-sm-6">
+                <h1>비밀번호 재설정</h1>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="content">
+          <div class="container-fluid">
+            <div class="row">
+              <div class="col-md-6 offset-md-3">
+                <div class="card card-primary">
+                  <div class="card-header">
+                    <h3 class="card-title">비밀번호 재설정 요청</h3>
+                  </div>
+                  
+                  <form id="resetRequestForm">
+                    <div class="card-body">
+                      <div th:if="${error}" class="alert alert-danger" role="alert">
+                        <span th:text="${error}"></span>
+                      </div>
+                      
+                      <div class="form-group">
+                        <label for="email">이메일 주소</label>
+                        <input type="email" 
+                               class="form-control" 
+                               id="email" 
+                               name="email" 
+                               placeholder="가입하신 이메일 주소를 입력하세요"
+                               required>
+                        <small class="form-text text-muted">
+                          비밀번호 재설정 링크가 이메일로 발송됩니다.
+                        </small>
+                      </div>
+                    </div>
+                    
+                    <div class="card-footer">
+                      <button type="button" class="btn btn-primary" onclick="sendResetMail()">메일 발송</button>
+                      <button type="button" class="btn btn-secondary" onclick="location.href='/board/list'">취소</button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <script th:inline="javascript">
+        function sendResetMail() {
+          const email = document.getElementById('email').value;
+          
+          if (!email || email.trim() === '') {
+            alert('이메일 주소를 입력해주세요.');
+            return;
+          }
+          
+          // 이메일 형식 검증
+          const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+          if (!emailRegex.test(email)) {
+            alert('올바른 이메일 형식이 아닙니다.');
+            return;
+          }
+          
+          fetch('/password/reset-request', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: new URLSearchParams({
+              email: email
+            })
+          })
+          .then(response => response.json())
+          .then(data => {
+            if (data.success) {
+              alert(data.message);
+              location.href = '/password/reset-request';
+            } else {
+              alert(data.message || '메일 발송에 실패했습니다.');
+            }
+          })
+          .catch(error => {
+            console.error('Error:', error);
+            alert('오류가 발생했습니다.');
+          });
+        }
+      </script>
+    </th:block>
+  </body>
+</html>
+

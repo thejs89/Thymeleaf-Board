@@ -41,3 +41,13 @@ CREATE TABLE organization_closure (
     CONSTRAINT fk_org_ancestor FOREIGN KEY (ancestor) REFERENCES organization(org_id),
     CONSTRAINT fk_org_descendant FOREIGN KEY (descendant) REFERENCES organization(org_id)
 );
+
+CREATE TABLE password_reset (
+    seq NUMBER NOT NULL PRIMARY KEY,
+    email VARCHAR(200) NOT NULL,
+    token VARCHAR(500) NOT NULL,
+    exp_date DATETIME NOT NULL,
+    used_yn BIT DEFAULT false,
+    reg_date DATETIME,
+    reg_ip VARCHAR(50)
+);
