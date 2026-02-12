@@ -51,3 +51,13 @@ CREATE TABLE password_reset (
     reg_date DATETIME,
     reg_ip VARCHAR(50)
 );
+
+CREATE TABLE member (
+    member_id VARCHAR(50) NOT NULL PRIMARY KEY,
+    password VARCHAR(200) NOT NULL,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(200),
+    reg_date DATETIME,
+    upd_date DATETIME,
+    delete_yn BIT DEFAULT false
+);

@@ -31,6 +31,18 @@
                 <p>비밀번호 재설정</p>
               </a>
             </li>
+            <li class="nav-item" th:if="${session.member == null}">
+              <a th:href="@{/login}" class="nav-link">
+                <i class="nav-icon fas fa-sign-in-alt"></i>
+                <p>로그인</p>
+              </a>
+            </li>
+            <li class="nav-item" th:if="${session.member != null}">
+              <a th:href="@{/login/logout}" class="nav-link">
+                <i class="nav-icon fas fa-sign-out-alt"></i>
+                <p>로그아웃</p>
+              </a>
+            </li>
           </ul>
         </nav>
         <!-- /.sidebar-menu -->

@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.board.thymeleaf.repository.MemberRepo">
+
+  <!--
+    회원 ID로 회원 정보를 조회합니다.
+    
+    조회 조건:
+    - member_id가 일치해야 함
+    - delete_yn이 false여야 함 (삭제되지 않은 회원만 조회)
+    
+    반환되는 컬럼:
+    - member_id → memberId (카멜케이스로 변환)
+    - password → password
+    - name → name
+    - email → email
+    - reg_date → regDate (카멜케이스로 변환)
+    - upd_date → updDate (카멜케이스로 변환)
+    - delete_yn → deleteYn (카멜케이스로 변환)
+  -->
+  <select id="findByMemberId" resultType="member">
+    SELECT member_id as memberId
+          ,password
+          ,name
+          ,email
+          ,reg_date as regDate
+          ,upd_date as updDate
+          ,delete_yn as deleteYn
+      FROM member
+     WHERE member_id = #{memberId}
+       AND delete_yn = false
+  </select>
+
+  <!--
+    회원 ID와 비밀번호로 회원 정보를 조회합니다.
+    
+    로그인 인증에 사용됩니다.
+    
+    조회 조건:
+    - member_id가 일치해야 함
+    - password가 일치해야 함
+    - delete_yn이 false여야 함 (삭제되지 않은 회원만 조회)
+    
+    반환되는 컬럼:
+    - member_id → memberId (카멜케이스로 변환)
+    - password → password
+    - name → name
+    - email → email
+    - reg_date → regDate (카멜케이스로 변환)
+    - upd_date → updDate (카멜케이스로 변환)
+    - delete_yn → deleteYn (카멜케이스로 변환)
+  -->
+  <select id="findByMemberIdAndPassword" resultType="member">
+    SELECT member_id as memberId
+          ,password
+          ,name
+          ,email
+          ,reg_date as regDate
+          ,upd_date as updDate
+          ,delete_yn as deleteYn
+      FROM member
+     WHERE member_id = #{memberId}
+       AND password = #{password}
+       AND delete_yn = false
+  </select>
+
+</mapper>
+

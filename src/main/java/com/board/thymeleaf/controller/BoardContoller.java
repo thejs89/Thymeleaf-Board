@@ -75,12 +75,18 @@ public class BoardContoller {
   }
 
   @PostMapping("/insert")
-  public String insertBoard(
+  @ResponseBody
+  public Map<String, Object> insertBoard(
       @RequestPart(value = "file", required = false) List<MultipartFile> fileList,
       @RequestParam(required = false) Map<String, Object> map,
       Model model) throws Exception {
     boardService.insertBoard(fileList, map);
-    return REDIRECT_LIST;
+    
+    Map<String, Object> result = new HashMap<>();
+    result.put("success", true);
+    result.put("redirectUrl", "/board/list");
+    result.put("message", "게시글이 등록되었습니다.");
+    return result;
   }
 
   @GetMapping("/reply")

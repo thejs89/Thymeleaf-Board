@@ -219,9 +219,6 @@
         const uploadFiles = this.ui.files.filter(({mode}) => mode === "REG");
         const removeFiles = this.ui.files.filter(({mode}) => mode === "DEL");
 
-        console.log('uploadFiles', uploadFiles);
-        console.log('removeFiles', removeFiles);
-
         const formData = new FormData(this.form);
 
         const baseKey = {id: 'BOARD'};
@@ -238,29 +235,55 @@
         const remove = {key: removeFiles.map(({key}) => key)};
         formData.append("removeFiles", JSON.stringify(remove));
 
-        for (let [key, value] of formData.entries()) {
-          console.log(`${key}: ${value}`);
-        }
-
+        // 모든 응답을 JSON으로 처리
         fetch(actionUrl, {
           method: "POST",
           body: formData,
-        })
-        .then(response => {
-          if (response.redirected) {
-            window.location.href = response.url;
-          } else {
-            return response.text();
+          headers: {
+            'Accept': 'application/json'
           }
         })
+        .then(response => {
+          // 응답이 성공이든 실패든 JSON으로 파싱 시도
+          return response.json().then(data => {
+            // response.ok가 false이면 에러로 처리
+            if (!response.ok) {
+              return Promise.reject({ data, response });
+            }
+            return data;
+          });
+        })
         .then(data => {
-          if (data) {
-            window.location.href = "/board/list";
+          // 성공 응답 처리
+          if (data.success && data.redirectUrl) {
+            // 성공 응답 - redirectUrl로 이동
+            window.location.href = data.redirectUrl;
+          } else if (data.redirectUrl) {
+            // redirectUrl만 있는 경우
+            window.location.href = data.redirectUrl;
           }
         })
         .catch(error => {
-          console.error('Error:', error);
-          alert('저장 중 오류가 발생했습니다.');
+          // 에러 응답 처리
+          if (error.data) {
+            // JSON 에러 응답인 경우
+            const errorData = error.data;
+            let errorMessage = errorData.error || errorData.message || '요청 처리 중 오류가 발생했습니다.';
+            
+            // 사용자 에러인 경우 fieldErrors 처리
+            if (errorData.userError && errorData.fieldErrors) {
+              const fieldErrorMessages = Object.entries(errorData.fieldErrors)
+                .map(([field, message]) => `${field}: ${message}`)
+                .join('\n');
+              errorMessage = errorData.message + '\n\n' + fieldErrorMessages;
+            }
+            
+            alert(errorMessage);
+          } else {
+            // JSON 파싱 실패 또는 네트워크 에러
+            console.error('Error:', error);
+            alert('요청 처리 중 오류가 발생했습니다.');
+          }
         });
       }
     };

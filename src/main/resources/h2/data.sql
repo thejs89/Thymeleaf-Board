@@ -33,3 +33,13 @@ INSERT INTO organization_closure (ancestor, descendant, depth) VALUES (4, 4, 0);
 -- CEO의 자식 (depth=1)
 INSERT INTO organization_closure (ancestor, descendant, depth) VALUES (1, 4, 1);
 
+-- 테스트 멤버 데이터
+INSERT INTO member (member_id, password, name, email, reg_date, delete_yn) 
+VALUES ('admin', 'admin123', '관리자', 'admin@test.com', CURRENT_TIMESTAMP, false);
+
+INSERT INTO member (member_id, password, name, email, reg_date, delete_yn) 
+VALUES ('user1', 'user123', '사용자1', 'user1@test.com', CURRENT_TIMESTAMP, false);
+
+INSERT INTO member (member_id, password, name, email, reg_date, delete_yn) 
+VALUES ('test', 'test123', '테스트', 'test@test.com', CURRENT_TIMESTAMP, false);
+
