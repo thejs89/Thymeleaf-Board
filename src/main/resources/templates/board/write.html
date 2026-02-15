@@ -30,11 +30,12 @@
                 <!-- general form elements -->
                 <div class="card card-primary">
                   <div class="card-header">
-                    <h3 class="card-title">게시판 등록</h3>
+                    <h3 class="card-title" th:text="${board.seq != null and board.seq > 0} ? '게시판 수정' : '게시판 등록'">게시판 등록</h3>
                   </div>
                   <!-- /.card-header -->
                   <!-- form start -->
-                  <form id="saveForm" th:action="@{/board/insert}" th:object="${board}" method="post" enctype="multipart/form-data">
+                  <form id="saveForm" th:action="${board.seq != null and board.seq > 0} ? @{/board/update} : @{/board/insert}" th:object="${board}" method="post" enctype="multipart/form-data">
+                    <input type="hidden" th:field="*{seq}" th:if="${board.seq != null and board.seq > 0}">
                     <div class="card-body">
                       <div class="form-group">
                         <label for="exampleInputEmail1">제목</label>
@@ -99,8 +100,23 @@
       <script th:inline="javascript">
         window.onload = function () {
           const board = /*[[${board}]]*/ {};
+          const fileList = /*[[${fileList}]]*/ [];
+          const isEditMode = board.seq != null && board.seq > 0;
+          const actionUrl = isEditMode ? '/board/update' : '/board/insert';
+          
+          // 수정 모드일 경우 기존 파일 정보를 board 객체에 추가
+          if (isEditMode && fileList && fileList.length > 0) {
+            board.file = fileList.map(file => ({
+              seq: file.fileSeq,
+              key: String(file.fileSeq),
+              name: file.fileName,
+              size: file.fileSize,
+              mode: 'UPD'
+            }));
+          }
+          
           const boardFileUpload = createBoardFileUpload();
-          boardFileUpload.init('fileInput', 'mySelect', 'saveForm', board, '/board/insert');
+          boardFileUpload.init('fileInput', 'mySelect', 'saveForm', board, actionUrl);
         };
       </script> 
     </th:block>

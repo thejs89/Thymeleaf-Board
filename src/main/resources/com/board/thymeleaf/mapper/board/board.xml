@@ -62,7 +62,7 @@
           ,GROUP_ID
           ,GROUP_ORDER
           ,DEPTH
-          ,REG_DATE          
+          ,REG_DATE          	
           ,REG_ID
           ,UPD_DATE
           ,UPD_ID
@@ -70,6 +70,26 @@
      WHERE 1=1
        AND DELETE_YN = false  
        AND seq = #{seq}
+  </select>
+
+  <select id="getParentBoard" resultType="board">
+    SELECT SEQ as seq
+          ,TITLE
+          ,CONTENT
+          ,DISPLAY
+          ,GROUP_ID
+          ,GROUP_ORDER
+          ,DEPTH
+          ,REG_DATE          	
+          ,REG_ID
+          ,UPD_DATE
+          ,UPD_ID
+      FROM BOARD
+     WHERE 1=1
+       AND DELETE_YN = false  
+       AND GROUP_ID = #{groupId}
+       AND DEPTH = 0
+     LIMIT 1
   </select>
 
   <insert id="insertReplyBoard">
@@ -103,6 +123,17 @@
               ,#{updDate}
               ,#{updId})
   </insert>
+
+  <update id="updateBoard">
+    UPDATE BOARD
+       SET title = #{title}
+          ,content = #{content}
+          ,display = #{display}
+          ,upd_date = #{updDate}
+          ,upd_id = #{updId}
+     WHERE seq = #{seq}
+       AND delete_yn = false
+  </update>
 
   <update id= "updateGroupOrd">
     UPDATE BOARD 

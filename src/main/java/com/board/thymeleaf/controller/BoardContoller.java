@@ -64,6 +64,16 @@ public class BoardContoller {
     return VIEW_BOARD_WRITE;
   }
 
+  @GetMapping("/edit")
+  public String getBoardEdit(@RequestParam Integer seq, Model model) throws Exception {
+    Board board = boardService.getBoardView(seq);
+    List<BoardFile> fileList = boardService.getBoardFileList(seq);
+    
+    model.addAttribute(MODEL_BOARD, board);
+    model.addAttribute(MODEL_FILE_LIST, fileList);
+    return VIEW_BOARD_WRITE;
+  }
+
   @GetMapping("/view")
   public String getBoardView(@RequestParam Integer seq, Model model) throws Exception {
     Board board = boardService.getBoardView(seq);
@@ -89,11 +99,40 @@ public class BoardContoller {
     return result;
   }
 
+  @PostMapping("/update")
+  @ResponseBody
+  public Map<String, Object> updateBoard(
+      @RequestPart(value = "file", required = false) List<MultipartFile> fileList,
+      @RequestParam(required = false) Map<String, Object> map,
+      Model model) throws Exception {
+    boardService.updateBoard(fileList, map);
+    
+    Map<String, Object> result = new HashMap<>();
+    result.put("success", true);
+    result.put("redirectUrl", "/board/list");
+    result.put("message", "게시글이 수정되었습니다.");
+    return result;
+  }
+
   @GetMapping("/reply")
   public String getBoardReply(@RequestParam Integer seq, Model model) throws Exception {
     Board board = boardService.getBoardView(seq);
     model.addAttribute(MODEL_BOARD, board);
     model.addAttribute(MODEL_REPLY_BOARD, new Board());
+    return VIEW_BOARD_REPLY;
+  }
+
+  @GetMapping("/reply/edit")
+  public String getBoardReplyEdit(@RequestParam Integer seq, Model model) throws Exception {
+    Board replyBoard = boardService.getBoardView(seq);
+    List<BoardFile> fileList = boardService.getBoardFileList(seq);
+    
+    // 답글의 부모 게시글 찾기 (group_id가 같고 depth가 0인 게시글)
+    Board parentBoard = boardService.getParentBoard(replyBoard.getGroupId());
+    
+    model.addAttribute(MODEL_BOARD, parentBoard);
+    model.addAttribute(MODEL_REPLY_BOARD, replyBoard);
+    model.addAttribute(MODEL_FILE_LIST, fileList);
     return VIEW_BOARD_REPLY;
   }
 
@@ -105,6 +144,21 @@ public class BoardContoller {
     Map<String, Object> processedMap = processReplyBoardMap(map);
     boardService.insertReplyBoard(fileList, processedMap);
     return REDIRECT_LIST;
+  }
+
+  @PostMapping("/reply/update")
+  @ResponseBody
+  public Map<String, Object> updateReplyBoard(
+      @RequestPart(value = "file", required = false) List<MultipartFile> fileList,
+      @RequestParam(required = false) Map<String, Object> map,
+      Model model) throws Exception {
+    boardService.updateBoard(fileList, map);
+    
+    Map<String, Object> result = new HashMap<>();
+    result.put("success", true);
+    result.put("redirectUrl", "/board/list");
+    result.put("message", "답글이 수정되었습니다.");
+    return result;
   }
 
   @PostMapping("/remove")

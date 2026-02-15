@@ -50,5 +50,11 @@
      ORDER BY file_seq ASC
   </select>
 
+  <update id="deleteBoardFile">
+    UPDATE BOARD_FILE
+       SET delete_yn = true
+     WHERE file_seq = #{fileSeq}
+  </update>
+
 </mapper>
 

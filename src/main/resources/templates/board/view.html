@@ -77,11 +77,13 @@
                   </div>
                   <!-- /.card-body --> 
                   <div class="card-footer">
-                    <form th:action="@{/board/remove}" th:object="${board}" method="post">
+                    <form th:action="@{/board/remove}" th:object="${board}" method="post" style="display: inline;">
                       <input type="hidden" class="form-control" placeholder="Enter title" th:field="*{seq}">
                       <button type="submit" class="btn btn-primary float-right" style="margin-left: 10px;">삭제</button>
                     </form> 
-                    <button type="button" class="btn btn-primary float-right" th:onclick="|location.href='@{/board/reply(seq=${board.seq})}'|">답글</button>
+                    <button type="button" class="btn btn-primary float-right" th:onclick="|location.href='@{/board/edit(seq=${board.seq})}'|" style="margin-left: 10px;" th:if="${board.depth == 0}">수정</button>
+                    <button type="button" class="btn btn-primary float-right" th:onclick="|location.href='@{/board/reply/edit(seq=${board.seq})}'|" style="margin-left: 10px;" th:if="${board.depth > 0}">수정</button>
+                    <button type="button" class="btn btn-primary float-right" th:onclick="|location.href='@{/board/reply(seq=${board.seq})}'|" th:if="${board.depth == 0}">답글</button>
                     <button type="button" class="btn btn-primary" th:onclick="|location.href='@{/board/list}'|">목록</button>
                   </div>
                 </div>    

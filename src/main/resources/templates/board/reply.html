@@ -30,7 +30,7 @@
                 <!-- general form elements -->
                 <div class="card card-primary">
                   <div class="card-header">
-                    <h3 class="card-title">게시판 답글 등록</h3>
+                    <h3 class="card-title" th:text="${replyboard.seq != null and replyboard.seq > 0} ? '게시판 답글 수정' : '게시판 답글 등록'">게시판 답글 등록</h3>
                   </div>
                   <!-- /.card-header -->
                   <!-- form start -->
@@ -48,11 +48,12 @@
                       <label class="form-check-label" for="display">공개</label>
                     </div>
                   </div>
-                  <form id="replyForm" th:action="@{/board/reply/insert}" th:object="${replyboard}" method="post" enctype="multipart/form-data">
+                  <form id="replyForm" th:action="${replyboard.seq != null and replyboard.seq > 0} ? @{/board/reply/update} : @{/board/reply/insert}" th:object="${replyboard}" method="post" enctype="multipart/form-data">
+                    <input type="hidden" th:field="*{seq}" th:if="${replyboard.seq != null and replyboard.seq > 0}">
                     <div class="card-body">
                       <div class="form-group">
                         <label for="exampleInputEmail1">제목</label>
-                        <input type="hidden" class="form-control" placeholder="Enter title"  id="parentSeq" name="parentSeq"  th:value="${board.seq}">
+                        <input type="hidden" class="form-control" placeholder="Enter title"  id="parentSeq" name="parentSeq"  th:value="${board.seq}" th:if="${replyboard.seq == null or replyboard.seq == 0}">
                         <input type="text" class="form-control" placeholder="Enter title" th:field="*{title}">
                       </div>    
                       <div class="form-group">
@@ -114,8 +115,23 @@
       <script th:inline="javascript">
         window.onload = function () {
           const replyboard = /*[[${replyboard}]]*/ {};
+          const fileList = /*[[${fileList}]]*/ [];
+          const isEditMode = replyboard.seq != null && replyboard.seq > 0;
+          const actionUrl = isEditMode ? '/board/reply/update' : '/board/reply/insert';
+          
+          // 수정 모드일 경우 기존 파일 정보를 replyboard 객체에 추가
+          if (isEditMode && fileList && fileList.length > 0) {
+            replyboard.file = fileList.map(file => ({
+              seq: file.fileSeq,
+              key: String(file.fileSeq),
+              name: file.fileName,
+              size: file.fileSize,
+              mode: 'UPD'
+            }));
+          }
+          
           const boardFileUpload = createBoardFileUpload();
-          boardFileUpload.init('replyFileInput', 'replyFileSelect', 'replyForm', replyboard, '/board/reply/insert');
+          boardFileUpload.init('replyFileInput', 'replyFileSelect', 'replyForm', replyboard, actionUrl);
         };
       </script>
     </th:block>

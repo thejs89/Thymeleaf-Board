@@ -57,6 +57,7 @@ CREATE TABLE member (
     password VARCHAR(200) NOT NULL,
     name VARCHAR(100) NOT NULL,
     email VARCHAR(200),
+    role VARCHAR(100) DEFAULT 'ROLE_USER',
     reg_date DATETIME,
     upd_date DATETIME,
     delete_yn BIT DEFAULT false

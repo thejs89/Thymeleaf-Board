@@ -13,6 +13,7 @@ public interface BoardFileRepo {
 
   Integer insertBoardFile(BoardFile boardFile);
   List<BoardFile> getBoardFileList(Integer boardSeq);
+  Integer deleteBoardFile(Integer fileSeq);
   
 }
 

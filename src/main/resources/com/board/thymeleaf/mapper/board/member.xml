@@ -23,6 +23,7 @@
           ,password
           ,name
           ,email
+          ,role
           ,reg_date as regDate
           ,upd_date as updDate
           ,delete_yn as deleteYn
@@ -55,6 +56,7 @@
           ,password
           ,name
           ,email
+          ,role
           ,reg_date as regDate
           ,upd_date as updDate
           ,delete_yn as deleteYn

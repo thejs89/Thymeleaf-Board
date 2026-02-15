@@ -34,12 +34,27 @@ INSERT INTO organization_closure (ancestor, descendant, depth) VALUES (4, 4, 0);
 INSERT INTO organization_closure (ancestor, descendant, depth) VALUES (1, 4, 1);
 
 -- 테스트 멤버 데이터
-INSERT INTO member (member_id, password, name, email, reg_date, delete_yn) 
-VALUES ('admin', 'admin123', '관리자', 'admin@test.com', CURRENT_TIMESTAMP, false);
+-- 비밀번호는 BCrypt로 암호화되어 저장됩니다.
+-- 
+-- 주의: 아래 해시는 예시입니다. 실제 해시를 생성하려면 
+-- PasswordHashGenerator 클래스를 실행하거나 PasswordEncoderUtil을 사용하세요.
+-- 
+-- 원본 비밀번호: admin123
+-- BCrypt 해시 생성 방법:
+--   1. PasswordHashGenerator.main() 실행
+--   2. 또는 PasswordEncoderUtil.encode("admin123") 사용
+--   3. 생성된 해시를 아래에 복사
+INSERT INTO member (member_id, password, name, email, role, reg_date, delete_yn) 
+VALUES ('admin', '$2a$10$i.FhsN5/E7E1q5tg2bdUIOJMtDjSR6JX6.MpC2cV8eJ0agdeJ2FsG', '관리자', 'admin@test.com', 'ROLE_ADMIN', CURRENT_TIMESTAMP, false);
 
-INSERT INTO member (member_id, password, name, email, reg_date, delete_yn) 
-VALUES ('user1', 'user123', '사용자1', 'user1@test.com', CURRENT_TIMESTAMP, false);
+-- 원본 비밀번호: user123
+INSERT INTO member (member_id, password, name, email, role, reg_date, delete_yn) 
+VALUES ('user1', '$2a$10$FoFCzhmwsg5TbbBwebvgTeoB7W3vVVRzrUVaKKj3qw4UPMs4ZTrze', '사용자1', 'user1@test.com', 'ROLE_USER', CURRENT_TIMESTAMP, false);
 
-INSERT INTO member (member_id, password, name, email, reg_date, delete_yn) 
-VALUES ('test', 'test123', '테스트', 'test@test.com', CURRENT_TIMESTAMP, false);
+-- 원본 비밀번호: test123
+INSERT INTO member (member_id, password, name, email, role, reg_date, delete_yn) 
+VALUES ('test', '$2a$10$gPC4Uv/7Ny8bz6WbAAKrSOnVdY.qpDDNID2jHqOhbMoTI3HI9zw82', '테스트', 'test@test.com', 'ROLE_USER', CURRENT_TIMESTAMP, false);
+
+-- 참고: BCrypt 해시는 매번 실행 시 다른 값이 생성되지만, 
+-- 같은 평문 비밀번호는 모두 matches()로 검증 가능합니다.
 

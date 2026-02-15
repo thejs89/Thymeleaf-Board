@@ -73,6 +73,12 @@ public class BoardServiceImpl implements BoardService {
 
   @Transactional(readOnly = true)
   @Override
+  public Board getParentBoard(Integer groupId) throws Exception {
+    return boardRepo.getParentBoard(groupId);
+  }
+
+  @Transactional(readOnly = true)
+  @Override
   public List<BoardFile> getBoardFileList(Integer boardSeq) throws Exception {
     return boardFileRepo.getBoardFileList(boardSeq);
   }
@@ -99,6 +105,22 @@ public class BoardServiceImpl implements BoardService {
     if (replySeq != null) {
       uploadFiles(replySeq, fileList, map);
     }
+  }
+
+  @Transactional(readOnly = false)
+  @Override
+  public void updateBoard(List<MultipartFile> fileList, Map<String, Object> map) throws Exception {
+    Board board = convertToBoard(map);
+    Date now = new Date();
+    board.setUpdDate(now);
+    board.setUpdId(DEFAULT_USER_ID);
+    boardRepo.updateBoard(board);
+
+    // 파일 삭제 처리
+    processFileRemoval(map);
+    
+    // 새 파일 업로드 처리
+    uploadFiles(board.getSeq(), fileList, map);
   }
 
   @Transactional(readOnly = false)
@@ -390,5 +412,35 @@ public class BoardServiceImpl implements BoardService {
     params.put("groupId", groupId);
     params.put("groupOrder", groupOrder);
     boardRepo.updateGroupOrd(params);
+  }
+
+  /**
+   * 파일 삭제 처리
+   */
+  private void processFileRemoval(Map<String, Object> map) throws Exception {
+    String removeFilesJson = (String) map.get("removeFiles");
+    if (removeFilesJson == null || removeFilesJson.isEmpty()) {
+      return;
+    }
+
+    try {
+      Map<String, Object> removeFilesMap = objectMapper.readValue(removeFilesJson, Map.class);
+      @SuppressWarnings("unchecked")
+      List<String> fileKeys = (List<String>) removeFilesMap.get("key");
+      
+      if (fileKeys != null && !fileKeys.isEmpty()) {
+        for (String key : fileKeys) {
+          try {
+            Integer fileSeq = Integer.parseInt(key);
+            boardFileRepo.deleteBoardFile(fileSeq);
+          } catch (NumberFormatException e) {
+            log.warn("파일 삭제 실패: 유효하지 않은 파일 키 - {}", key);
+          }
+        }
+      }
+    } catch (Exception e) {
+      log.error("파일 삭제 처리 중 오류 발생", e);
+      throw new RuntimeException("파일 삭제 처리 중 오류가 발생했습니다.", e);
+    }
   }
 }
